@@ -1,13 +1,39 @@
 import pytest
-from collections.abc import Generator
+import os
+from dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
+
+"""load the env"""
+load_dotenv()
 
 
 def pytest_configure(config):
     config.option.maxprocesses = 1
 
 
+"""
+Fixtures
+"""
+REQUIRED_ENV = ["APP_BASEURL"]
+
+
+def pytest_sessionstart(session: pytest.Session):
+    missing = [var for var in REQUIRED_ENV if var not in os.environ]
+    if missing:
+        raise pytest.UsageError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )
+
+
+@pytest.fixture
+def app_baseurl():
+    return os.environ.get("APP_BASEURL")
+
+
+"""
+Report output plugin
+"""
 results: dict[str, str] = {}
 
 
