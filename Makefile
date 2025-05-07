@@ -17,7 +17,7 @@ install:
 
 debug:
 	clear \
-	; pytest -vs test_webapp.py::test_support_user_login
+	; pytest -vs test_forge.py
 
 test:
 	clear \

@@ -1,0 +1,128 @@
+import pytest
+
+
+@pytest.fixture(scope="module")
+def server(forge_api, forge):
+    baseurl, session = forge_api
+    res = session.get(f"{baseurl}/servers/{forge['server_id']}")
+    res.raise_for_status()
+    return res.json()["server"]
+
+
+@pytest.fixture(scope="module")
+def site(forge_api, forge):
+    baseurl, session = forge_api
+    res = session.get(
+        f"{baseurl}/servers/{forge['server_id']}/sites/{forge['site_id']}"
+    )
+    res.raise_for_status()
+    return res.json()["site"]
+
+
+@pytest.fixture(scope="module")
+def monitors(forge_api, forge):
+    baseurl, session = forge_api
+    res = session.get(f"{baseurl}/servers/{forge['server_id']}/monitors")
+    res.raise_for_status()
+    return res.json()["monitors"]
+
+
+def test_forge_server_exists(server):
+    """forge : server : exists"""
+    assert isinstance(server, dict)
+
+
+def test_forge_server_name(server):
+    """forge : server : name=colouredaggregates-prd"""
+    v = server["name"]
+    assert isinstance(v, str)
+    assert v == "colouredaggregates-prd"
+
+
+def test_forge_server_type(server):
+    """forge : server : type=app"""
+    v = server["type"]
+    assert isinstance(v, str)
+    assert v == "app"
+
+
+def test_forge_server_php_version(server):
+    """forge : server : php version=7.4"""
+    v = server["php_version"]
+    assert isinstance(v, str)
+    assert v == "php74"
+
+
+def test_forge_server_mysql_version(server):
+    """forge : server : mysql version=8"""
+    v = server["database_type"]
+    assert isinstance(v, str)
+    assert v == "mysql8"
+
+
+def test_forge_server_ready(server):
+    """forge : server : is_ready"""
+    v = server["is_ready"]
+    assert isinstance(v, bool)
+    assert v == True
+
+
+def test_forge_site_exists(site):
+    """forge : site : exists"""
+    assert isinstance(site, dict)
+
+
+def test_forge_site_name(site):
+    """forge : site : name=app.colouredaggregates.com"""
+    v = site["name"]
+    assert isinstance(v, str)
+    assert v == "app.colouredaggregates.com"
+
+
+def test_forge_site_status(site):
+    """forge : site : status=installed"""
+    v = site["status"]
+    assert isinstance(v, str)
+    assert v == "installed"
+
+
+def test_forge_site_project_type(site):
+    """forge : site : project_type=php"""
+    v = site["project_type"]
+    assert isinstance(v, str)
+    assert v == "php"
+
+
+def test_forge_site_php_version(site):
+    """forge : site : php_version=php74"""
+    v = site["php_version"]
+    assert isinstance(v, str)
+    assert v == "php74"
+
+
+def test_forge_site_failure_notify(site):
+    """forge : site : notify=craig@iglooit.com"""
+    v = site["failure_deployment_emails"]
+    assert isinstance(v, str)
+    assert v == '["craig@iglooit.com"]'
+
+
+def test_forge_monitor_states(monitors):
+    """forge : monitors : status=OK"""
+    assert len(monitors) == 2
+    for monitor in monitors:
+        assert monitor["state"] == "OK"
+
+
+def test_forge_monitor_types(monitors):
+    """forge : monitors : type=disk"""
+    assert len(monitors) == 2
+    for monitor in monitors:
+        assert monitor["type"] == "disk"
+
+
+def test_forge_monitor_statuses(monitors):
+    """forge : monitors : status=installed"""
+    assert len(monitors) == 2
+    for monitor in monitors:
+        assert monitor["status"] == "installed"

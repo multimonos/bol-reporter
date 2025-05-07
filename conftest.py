@@ -1,4 +1,5 @@
 import pytest
+import requests
 import os
 from dotenv import load_dotenv
 from datetime import datetime
@@ -16,7 +17,14 @@ def pytest_configure(config):
 """
 .env
 """
-REQUIRED_ENV = ["APP_BASEURL", "APP_SUPPORT_USERNAME", "APP_SUPPORT_PASSWORD"]
+REQUIRED_ENV = [
+    "APP_BASEURL",
+    "APP_SUPPORT_USERNAME",
+    "APP_SUPPORT_PASSWORD",
+    "FORGE_API_URL",
+    "FORGE_API_TOKEN",
+    "FORGE_SERVER_ID",
+]
 
 
 def pytest_sessionstart(session: pytest.Session):
@@ -49,6 +57,27 @@ def support_user() -> tuple[str, str]:
         os.environ.get("APP_SUPPORT_USERNAME", ""),
         os.environ.get("APP_SUPPORT_PASSWORD", ""),
     )
+
+
+@pytest.fixture(scope="session")
+def forge_api() -> tuple[str, requests.Session]:
+    session = requests.Session()
+    session.headers.update(
+        {
+            "Authorization": f"Bearer {os.environ.get('FORGE_API_TOKEN')}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+    )
+    return os.environ.get("FORGE_API_URL", ""), session
+
+
+@pytest.fixture(scope="session")
+def forge() -> dict[str, str]:
+    return {
+        "server_id": os.environ.get("FORGE_SERVER_ID", ""),
+        "site_id": os.environ.get("FORGE_SITE_ID", ""),
+    }
 
 
 """
