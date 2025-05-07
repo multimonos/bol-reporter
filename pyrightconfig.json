@@ -1,0 +1,7 @@
+{
+  "venvPath": "./",
+  "typeCheckingMode": "basic",
+  "reportImplicitOverride": false,
+  "reportUnusedCallResult": false,
+  "reportUnknownVariableType": false
+}
