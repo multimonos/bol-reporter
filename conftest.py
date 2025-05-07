@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 """load the env"""
 load_dotenv()
@@ -13,9 +14,9 @@ def pytest_configure(config):
 
 
 """
-Fixtures
+.env
 """
-REQUIRED_ENV = ["APP_BASEURL"]
+REQUIRED_ENV = ["APP_BASEURL", "APP_SUPPORT_USERNAME", "APP_SUPPORT_PASSWORD"]
 
 
 def pytest_sessionstart(session: pytest.Session):
@@ -26,9 +27,28 @@ def pytest_sessionstart(session: pytest.Session):
         )
 
 
-@pytest.fixture
-def app_baseurl():
-    return os.environ.get("APP_BASEURL")
+"""
+Fixtures
+"""
+
+
+@pytest.fixture(scope="session")
+def baseurl() -> str:
+    return os.environ.get("APP_BASEURL", "")
+
+
+@pytest.fixture(scope="session")
+def hostname() -> str:
+    h = urlparse(os.environ.get("APP_BASEURL", "")).hostname
+    return h if h else ""
+
+
+@pytest.fixture(scope="session")
+def support_user() -> tuple[str, str]:
+    return (
+        os.environ.get("APP_SUPPORT_USERNAME", ""),
+        os.environ.get("APP_SUPPORT_PASSWORD", ""),
+    )
 
 
 """

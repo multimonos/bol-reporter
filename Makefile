@@ -1,6 +1,7 @@
 .PHONY: debug test \
 	fixtures
 
+
 #
 # NOTES
 # - that the "-n1" flag captures all output
@@ -11,8 +12,12 @@ DATE := $(shell date +%Y-%m-%d)
 REPORT_DIR := reports
 REPORT_FILE := $(REPORT_DIR)/$(DATE).md
 
+install:
+	pip install -r requirements.txt && playwright install chromium
+
 debug:
-	echo 'nothing here'
+	clear \
+	; pytest -vs test_webapp.py::test_support_user_login
 
 test:
 	clear \
