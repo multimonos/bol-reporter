@@ -4,14 +4,14 @@ from datetime import datetime
 from pathlib import Path
 
 
-results = {}
-
-
 def pytest_configure(config):
     config.option.maxprocesses = 1
 
 
-def pytest_collection_modifyitems(items):
+results: dict[str, str] = {}
+
+
+def pytest_collection_modifyitems(items) -> None:
     """set custom docstring property when possible for each test"""
     for item in items:
         item.docstring = getattr(item.function, "__doc__", None)
@@ -26,7 +26,7 @@ def pytest_runtest_logreport(report: pytest.TestReport) -> None:
     results[report.nodeid] = report.outcome
 
 
-def pytest_sessionfinish(session):
+def pytest_sessionfinish(session: pytest.Session) -> None:
     """write output to file"""
     # target
     Path("reports").mkdir(exist_ok=True)
