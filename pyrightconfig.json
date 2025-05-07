@@ -1,5 +1,6 @@
 {
   "venvPath": "./",
+  "venv": "venv",
   "typeCheckingMode": "basic",
   "reportImplicitOverride": false,
   "reportUnusedCallResult": false,
