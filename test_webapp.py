@@ -1,35 +1,33 @@
 from urllib.parse import urlparse
 import pytest
 import requests
+from model import WebappConfig
 from util import ssl_valid_days
 from playwright.sync_api import Error, TimeoutError, sync_playwright
 
 
-def test_webapp_exists(baseurl):
+def test_webapp_exists(webapp_config: WebappConfig) -> None:
     """webapp : main website is up and running"""
-    r = requests.get(baseurl)
+    r = requests.get(webapp_config.url)
     assert r.status_code == 200
 
 
-def test_webapp_ssl_valid(hostname):
+def test_webapp_ssl_valid(webapp_config: WebappConfig) -> None:
     """webapp : ssl is valid for at least 30 days"""
-    assert ssl_valid_days(hostname) > 30
+    assert ssl_valid_days(webapp_config.hostname) > 30
 
 
-def test_webapp_login(baseurl, support_user):
+def test_webapp_login(webapp_config: WebappConfig) -> None:
     """webapp : support user can login"""
-    (usr, pwd) = support_user
-    success = False
-    err = ""
 
     try:
         with sync_playwright() as p:
             browswer = p.chromium.launch(headless=True)
             page = browswer.new_page()
 
-            page.goto(baseurl)
-            page.fill("#email", usr)
-            page.fill("#password", pwd)
+            page.goto(webapp_config.url)
+            page.fill("#email", webapp_config.username)
+            page.fill("#password", webapp_config.password)
             page.click("button[type=submit]")
 
             # assertions

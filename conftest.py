@@ -6,6 +6,8 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
+from model import WebappConfig
+
 """load the env"""
 load_dotenv()
 
@@ -18,12 +20,15 @@ def pytest_configure(config):
 .env
 """
 REQUIRED_ENV = [
-    "APP_BASEURL",
-    "APP_SUPPORT_USERNAME",
-    "APP_SUPPORT_PASSWORD",
-    "FORGE_API_URL",
-    "FORGE_API_TOKEN",
-    "FORGE_SERVER_ID",
+    "APP_URL",
+    "APP_USERNAME",
+    "APP_PASSWORD",
+    "FORGE_APIURL",
+    "FORGE_APIKEY",
+    "FORGE_SERVERID",
+    "FORGE_SITEID",
+    "OCEAN_APIURL",
+    "OCEAN_APIKEY",
 ]
 
 
@@ -41,18 +46,19 @@ Fixtures
 
 
 @pytest.fixture(scope="session")
-def baseurl() -> str:
-    return os.environ.get("APP_BASEURL", "")
-
-
-@pytest.fixture(scope="session")
-def hostname() -> str:
-    h = urlparse(os.environ.get("APP_BASEURL", "")).hostname
-    return h if h else ""
+def webapp_config() -> WebappConfig:
+    """get webapp config"""
+    return WebappConfig(
+        url=os.environ.get("APP_URL", "") or "",
+        hostname=urlparse(os.environ.get("APP_URL", "")).hostname or "",
+        username=os.environ.get("APP_USERNAME", ""),
+        password=os.environ.get("APP_PASSWORD", ""),
+    )
 
 
 @pytest.fixture(scope="session")
 def support_user() -> tuple[str, str]:
+    """get webapp support user creds"""
     return (
         os.environ.get("APP_SUPPORT_USERNAME", ""),
         os.environ.get("APP_SUPPORT_PASSWORD", ""),
@@ -61,23 +67,39 @@ def support_user() -> tuple[str, str]:
 
 @pytest.fixture(scope="session")
 def forge_api() -> tuple[str, requests.Session]:
+    """get the laravel forge api baseurl and a requests session"""
     session = requests.Session()
     session.headers.update(
         {
-            "Authorization": f"Bearer {os.environ.get('FORGE_API_TOKEN')}",
+            "Authorization": f"Bearer {os.environ.get('FORGE_APIKEY')}",
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
     )
-    return os.environ.get("FORGE_API_URL", ""), session
+    return os.environ.get("FORGE_APIURL", ""), session
 
 
 @pytest.fixture(scope="session")
-def forge() -> dict[str, str]:
+def forge_config() -> dict[str, str]:
+    """get laravel forge config"""
     return {
-        "server_id": os.environ.get("FORGE_SERVER_ID", ""),
-        "site_id": os.environ.get("FORGE_SITE_ID", ""),
+        "server_id": os.environ.get("FORGE_SERVERID", "") or "",
+        "site_id": os.environ.get("FORGE_SITEID", "") or "",
     }
+
+
+@pytest.fixture(scope="session")
+def ocean_api() -> tuple[str, requests.Session]:
+    """get the digital ocean api baseurl and a requests session"""
+    session = requests.Session()
+    session.headers.update(
+        {
+            "Authorization": f"Bearer {os.environ.get('OCEAN_APIKEY')}",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+    )
+    return os.environ.get("OCEAN_APIURL", ""), session
 
 
 """
