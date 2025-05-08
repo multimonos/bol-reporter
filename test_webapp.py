@@ -6,18 +6,18 @@ from util import ssl_valid_days
 from playwright.sync_api import Error, TimeoutError, sync_playwright
 
 
-def test_webapp_exists(webapp_config: WebappConfig) -> None:
+def test_webapp_exists(webapp_config: WebappConfig):
     """webapp : main website is up and running"""
     r = requests.get(webapp_config.url)
     assert r.status_code == 200
 
 
-def test_webapp_ssl_valid(webapp_config: WebappConfig) -> None:
+def test_webapp_ssl_valid(webapp_config: WebappConfig):
     """webapp : ssl is valid for at least 30 days"""
     assert ssl_valid_days(webapp_config.hostname) > 30
 
 
-def test_webapp_login(webapp_config: WebappConfig) -> None:
+def test_webapp_login(webapp_config: WebappConfig):
     """webapp : support user can login"""
 
     try:

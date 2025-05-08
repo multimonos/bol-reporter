@@ -96,7 +96,7 @@ def ocean_session() -> requests.Session:
 
 
 """
-Report output plugin
+Report output plugin adds docstrings where present.
 """
 results: dict[str, str] = {}
 
