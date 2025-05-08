@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
-from model import WebappConfig
+from model import ForgeConfig, WebappConfig
 
 """load the env"""
 load_dotenv()
@@ -57,49 +57,42 @@ def webapp_config() -> WebappConfig:
 
 
 @pytest.fixture(scope="session")
-def support_user() -> tuple[str, str]:
-    """get webapp support user creds"""
-    return (
-        os.environ.get("APP_SUPPORT_USERNAME", ""),
-        os.environ.get("APP_SUPPORT_PASSWORD", ""),
-    )
-
-
-@pytest.fixture(scope="session")
-def forge_api() -> tuple[str, requests.Session]:
+def forge_session() -> requests.Session:
     """get the laravel forge api baseurl and a requests session"""
     session = requests.Session()
     session.headers.update(
         {
-            "Authorization": f"Bearer {os.environ.get('FORGE_APIKEY')}",
+            "Authorization": f"Bearer {os.environ.get('FORGE_APIKEY', '')}",
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
     )
-    return os.environ.get("FORGE_APIURL", ""), session
+    return session
 
 
 @pytest.fixture(scope="session")
-def forge_config() -> dict[str, str]:
+def forge_config() -> ForgeConfig:
     """get laravel forge config"""
-    return {
-        "server_id": os.environ.get("FORGE_SERVERID", "") or "",
-        "site_id": os.environ.get("FORGE_SITEID", "") or "",
-    }
+    return ForgeConfig(
+        apiurl=os.environ.get("FORGE_APIURL", ""),
+        apikey=os.environ.get("FORGE_APIKEy", ""),
+        server_id=int(os.environ.get("FORGE_SERVERID", 0)),
+        site_id=int(os.environ.get("FORGE_SITEID", 0)),
+    )
 
 
 @pytest.fixture(scope="session")
-def ocean_api() -> tuple[str, requests.Session]:
+def ocean_session() -> requests.Session:
     """get the digital ocean api baseurl and a requests session"""
     session = requests.Session()
     session.headers.update(
         {
-            "Authorization": f"Bearer {os.environ.get('OCEAN_APIKEY')}",
+            "Authorization": f"Bearer {os.environ.get('OCEAN_APIKEY', '')}",
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
     )
-    return os.environ.get("OCEAN_APIURL", ""), session
+    return session
 
 
 """

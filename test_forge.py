@@ -1,36 +1,37 @@
+from os import fsencode
 import pytest
+
+from conftest import forge_config
 
 
 @pytest.fixture(scope="module")
-def server(forge_api, forge):
-    baseurl, session = forge_api
-    res = session.get(f"{baseurl}/servers/{forge['server_id']}")
+def server(forge_config, forge_session):
+    url = f"{forge_config.apiurl}/servers/{forge_config.server_id}"
+    res = forge_session.get(url)
     res.raise_for_status()
     return res.json()["server"]
 
 
 @pytest.fixture(scope="module")
-def site(forge_api, forge):
-    baseurl, session = forge_api
-    res = session.get(
-        f"{baseurl}/servers/{forge['server_id']}/sites/{forge['site_id']}"
-    )
+def site(forge_config, forge_session):
+    url = f"{forge_config.apiurl}/servers/{forge_config.server_id}/sites/{forge_config.site_id}"
+    res = forge_session.get(url)
     res.raise_for_status()
     return res.json()["site"]
 
 
 @pytest.fixture(scope="module")
-def monitors(forge_api, forge):
-    baseurl, session = forge_api
-    res = session.get(f"{baseurl}/servers/{forge['server_id']}/monitors")
+def monitors(forge_config, forge_session):
+    url = f"{forge_config.apiurl}/servers/{forge_config.server_id}/monitors"
+    res = forge_session.get(url)
     res.raise_for_status()
     return res.json()["monitors"]
 
 
 @pytest.fixture(scope="module")
-def backups(forge_api, forge):
-    baseurl, session = forge_api
-    res = session.get(f"{baseurl}/servers/{forge['server_id']}/backup-configs")
+def backups(forge_config, forge_session):
+    url = f"{forge_config.apiurl}/servers/{forge_config.server_id}/backup-configs"
+    res = forge_session.get(url)
     res.raise_for_status()
     return res.json()["backups"]
 
