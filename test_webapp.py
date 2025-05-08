@@ -6,18 +6,18 @@ from playwright.sync_api import Error, TimeoutError, sync_playwright
 
 
 def test_webapp_exists(baseurl):
-    """main website is up and running"""
+    """webapp : main website is up and running"""
     r = requests.get(baseurl)
     assert r.status_code == 200
 
 
 def test_webapp_ssl_valid(hostname):
-    """ssl is valid for at least 30 days"""
+    """webapp : ssl is valid for at least 30 days"""
     assert ssl_valid_days(hostname) > 30
 
 
 def test_webapp_login(baseurl, support_user):
-    """support user can login"""
+    """webapp : support user can login"""
     (usr, pwd) = support_user
     success = False
     err = ""

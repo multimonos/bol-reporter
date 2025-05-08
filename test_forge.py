@@ -27,6 +27,14 @@ def monitors(forge_api, forge):
     return res.json()["monitors"]
 
 
+@pytest.fixture(scope="module")
+def backups(forge_api, forge):
+    baseurl, session = forge_api
+    res = session.get(f"{baseurl}/servers/{forge['server_id']}/backup-configs")
+    res.raise_for_status()
+    return res.json()["backups"]
+
+
 def test_forge_server_exists(server):
     """forge : server : exists"""
     assert isinstance(server, dict)
@@ -126,3 +134,50 @@ def test_forge_monitor_statuses(monitors):
     assert len(monitors) == 2
     for monitor in monitors:
         assert monitor["status"] == "installed"
+
+
+def test_forge_backup(backups):
+    """forge : backup configs : count=3"""
+    assert len(backups) == 3
+
+
+def test_forge_backup_installed(backups):
+    """forge : backup configs : installed=true"""
+    assert len(backups) == 3
+    for backup in backups:
+        assert backup["status"] == "installed"
+
+
+def test_forge_backup_provider(backups):
+    """forge : backup configs : provider=spaces"""
+    assert len(backups) == 3
+    for backup in backups:
+        assert backup["provider"] == "spaces"
+
+
+def test_forge_backup_databases(backups):
+    """forge : backup configs : database=forge,colouredaggregates_prd"""
+    assert len(backups) == 3
+    for backup in backups:
+        assert len(backup["databases"]) == 2
+        names = [x["name"] for x in backup["databases"]]
+        assert "forge" in names
+        assert "colouredaggregates_prd" in names
+
+
+def test_forge_backup_schedules(backups):
+    """forge : backup configs : schedules=hourly,daily,weekly"""
+    assert len(backups) == 3
+    schedules = [x["schedule"] for x in backups]
+    assert "daily" in schedules
+    assert "hourly" in schedules
+    assert "weekly" in schedules
+
+
+def test_forge_backup_successes(backups):
+    """forge : backup successes : all ok"""
+    assert len(backups) == 3
+    for backup in backups:
+        statuses = list(set([x["status"] for x in backup["backups"]]))
+        assert len(statuses) == 1
+        assert "success" in statuses
