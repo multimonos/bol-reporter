@@ -1,7 +1,4 @@
-from os import fsencode
 import pytest
-
-from conftest import forge_config
 
 
 @pytest.fixture(scope="module")
