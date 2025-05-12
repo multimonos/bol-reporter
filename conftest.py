@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
+from pydo import Client
 
-from model import ForgeConfig, WebappConfig
+from model import DropletConfig, ForgeConfig, OceanConfig, WebappConfig
 
 """load the env"""
 load_dotenv()
@@ -27,8 +28,9 @@ REQUIRED_ENV = [
     "FORGE_APIKEY",
     "FORGE_SERVERID",
     "FORGE_SITEID",
-    "OCEAN_APIURL",
     "OCEAN_APIKEY",
+    "OCEAN_PRD_DROPLET_NAME",
+    "OCEAN_STG_DROPLET_NAME",
 ]
 
 
@@ -75,24 +77,26 @@ def forge_config() -> ForgeConfig:
     """get laravel forge config"""
     return ForgeConfig(
         apiurl=os.environ.get("FORGE_APIURL", ""),
-        apikey=os.environ.get("FORGE_APIKEy", ""),
+        apikey=os.environ.get("FORGE_APIKEY", ""),
         server_id=int(os.environ.get("FORGE_SERVERID", 0)),
         site_id=int(os.environ.get("FORGE_SITEID", 0)),
     )
 
 
 @pytest.fixture(scope="session")
-def ocean_session() -> requests.Session:
-    """get the digital ocean api baseurl and a requests session"""
-    session = requests.Session()
-    session.headers.update(
-        {
-            "Authorization": f"Bearer {os.environ.get('OCEAN_APIKEY', '')}",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
-    )
-    return session
+def ocean_client() -> Client:
+    """get the digital ocean client"""
+    client = Client(token=os.environ.get("OCEAN_APIKEY", ""))
+    return client
+
+
+@pytest.fixture(scope="session")
+def ocean_config() -> OceanConfig:
+    """get digital ocean configs"""
+    prd = DropletConfig(name=os.environ.get("OCEAN_PRD_DROPLET_NAME", ""))
+    stg = DropletConfig(name=os.environ.get("OCEAN_STG_DROPLET_NAME", ""))
+
+    return OceanConfig(apikey=os.environ.get("OCEAN_APIKEY", ""), prd=prd, stg=stg)
 
 
 """

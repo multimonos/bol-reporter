@@ -17,7 +17,7 @@ install:
 
 debug:
 	clear \
-	; pytest -vs test_webapp.py
+	; pytest -s test_ocean_metrics.py
 
 test:
 	clear \

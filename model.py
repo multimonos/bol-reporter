@@ -2,6 +2,19 @@ from dataclasses import dataclass
 
 
 @dataclass
+class DropletInfo:
+    id: int
+    name: str
+    disk_size: int
+
+
+@dataclass
+class TimestampWindow:
+    start: int
+    end: int
+
+
+@dataclass
 class WebappConfig:
     url: str
     hostname: str
@@ -18,6 +31,12 @@ class ForgeConfig:
 
 
 @dataclass
+class DropletConfig:
+    name: str
+
+
+@dataclass
 class OceanConfig:
-    apiurl: str
     apikey: str
+    prd: DropletConfig
+    stg: DropletConfig
