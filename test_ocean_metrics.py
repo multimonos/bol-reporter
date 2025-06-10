@@ -48,7 +48,7 @@ def droplet_info(ocean_client: Client) -> list[DropletInfo]:
 def test_ocean_metric_filesystem_free(
     ocean_client: Client, droplet_info: list[DropletInfo], window: TimestampWindow
 ):
-    """disk free is greater than 20%"""
+    """digital-ocean : droplets : disk free is greater than 20%"""
     for droplet in droplet_info:
         res = ocean_client.monitoring.get_droplet_filesystem_free_metrics(
             host_id=str(droplet.id), start=str(window.start), end=str(window.end)

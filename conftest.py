@@ -129,7 +129,7 @@ def pytest_sessionfinish(session: pytest.Session) -> None:
     # write
     with open(report_path, "w") as f:
         f.write("\n#")
-        f.write(f"\n# BOL Report – {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        f.write(f"\n# BOL Report – {datetime.now().strftime('%Y-%m-%d')}")
         f.write("\n#")
         f.write("\n")
 
