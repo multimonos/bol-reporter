@@ -13,7 +13,7 @@ REPORT_DIR := reports
 REPORT_FILE := $(REPORT_DIR)/$(DATE).md
 
 install:
-	pip install -r requirements.txt && playwright install chromium
+	./venv/bin/pip install -r requirements.txt && playwright install chromium
 
 debug:
 	clear \
