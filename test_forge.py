@@ -112,8 +112,9 @@ def test_forge_site_php_version(site: dict):
 def test_forge_site_failure_notify(site: dict):
     """forge : site : notify=craig@iglooit.com"""
     v = site["failure_deployment_emails"]
-    assert isinstance(v, str)
-    assert v == '["craig@iglooit.com"]'
+    assert isinstance(v, list)
+    assert len(v) > 0
+    assert v == ["craig@iglooit.com"]
 
 
 def test_forge_monitor_states(monitors: dict):
